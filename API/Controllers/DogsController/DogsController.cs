@@ -55,11 +55,12 @@ namespace API.Controllers.DogsController
 
         // IMPLEMENT DELETE !!!
 
-        [HttpDelete]
+        /*[HttpDelete]
         [Route("deleteDogById/{deleteDogById}")]
         public async Task <IActionResult> DeleteDog()
         {
 
         }
+        */
     }
 }

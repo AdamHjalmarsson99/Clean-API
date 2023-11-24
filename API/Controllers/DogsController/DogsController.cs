@@ -1,4 +1,5 @@
 ﻿using Application.Commands.Dogs;
+using Application.Commands.Dogs.DeleteDog;
 using Application.Commands.Dogs.UpdateDog;
 using Application.Dtos;
 using Application.Queries.Dogs.GetAll;
@@ -26,10 +27,9 @@ namespace API.Controllers.DogsController
         public async Task<IActionResult> GetAllDogs()
         {
             return Ok(await _mediator.Send(new GetAllDogsQuery()));
-            //return Ok("GET ALL DOGS");
         }
 
-        // Get a dog by Id
+        // Get a specific dog by Id
         [HttpGet]
         [Route("getDogById/{dogId}")]
         public async Task<IActionResult> GetDogById(Guid dogId)
@@ -45,7 +45,7 @@ namespace API.Controllers.DogsController
             return Ok(await _mediator.Send(new AddDogCommand(newDog)));
         }
 
-        // Update a specific dog
+        // Update a specific dog by id
         [HttpPut]
         [Route("updateDog/{updatedDogId}")]
         public async Task<IActionResult> UpdateDog([FromBody] DogDto updatedDog, Guid updatedDogId)
@@ -53,14 +53,19 @@ namespace API.Controllers.DogsController
             return Ok(await _mediator.Send(new UpdateDogByIdCommand(updatedDog, updatedDogId)));
         }
 
-        // IMPLEMENT DELETE !!!
-
-        /*[HttpDelete]
-        [Route("deleteDogById/{deleteDogById}")]
-        public async Task <IActionResult> DeleteDog()
+        //Delete a specific dog by id
+        [HttpDelete]
+        [Route("deleteDogById/{dogId}")]
+        public async Task<IActionResult> DeleteDogById(Guid dogId)
         {
+            var deletedDog = await _mediator.Send(new DeleteDogByIdCommand(dogId));
 
+            if (deletedDog == null)
+            {
+                return NotFound($"Dog with ID {dogId} not found.");
+            }
+
+            return Ok(deletedDog);
         }
-        */
     }
 }

@@ -53,11 +53,10 @@ namespace API.Controllers.DogsController
             return Ok(await _mediator.Send(new UpdateDogByIdCommand(updatedDog, updatedDogId)));
         }
 
-        
         //Delete a specific dog by id
         [HttpDelete]
         [Route("deleteDogById/{dogId}")]
-        public async Task <IActionResult> DeleteDogById(Guid dogId)
+        public async Task<IActionResult> DeleteDogById(Guid dogId)
         {
             var deletedDog = await _mediator.Send(new DeleteDogByIdCommand(dogId));
 

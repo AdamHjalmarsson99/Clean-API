@@ -16,6 +16,12 @@ namespace Infrastructure.Database
             set { allBirds = value; }
         }
 
+        public List<Cat> Cats
+        {
+            get { return allCats; }
+            set { allCats = value; }
+        }
+
         private static List<Dog> allDogs = new()
         {
             new Dog { Id = Guid.NewGuid(), Name = "Björn"},
@@ -34,6 +40,16 @@ namespace Infrastructure.Database
             new Bird { Id = new Guid("60fdbc14-3f6c-4ddb-90a5-89c2e465be12"), Name = "TestBirdForUnitTests", CanFly = true },
             new Bird { Id = new Guid("65113f59-a1c8-4c0d-9215-cf407efb2108"), Name = "TestBirdForUpdateTests", CanFly = false },
             new Bird { Id = new Guid("94d807a1-5de4-4779-9f97-dd6a7173d207"), Name = "TestBirdForDeleteTests", CanFly = false }
+        };
+
+        private static List<Cat> allCats = new()
+        {
+            new Cat { Id = Guid.NewGuid(), Name = "Rice", LikesToPlay = false },
+            new Cat { Id = Guid.NewGuid(), Name = "Saliba", LikesToPlay = true },
+            new Cat { Id = Guid.NewGuid(), Name = "Jesus", LikesToPlay = true },
+            new Cat { Id = new Guid("bf49c5e3-e438-42e7-8f2f-4a6d3656757d"), Name = "TestCatForUnitTests", LikesToPlay = true },
+            new Cat { Id = new Guid("e4490bed-d15e-4d80-84e7-239dd90bf587"), Name = "TestCatForUpdateTests", LikesToPlay = false },
+            new Cat { Id = new Guid("559c67b0-7baf-45cf-980f-5d424c142b69"), Name = "TestCatForDeleteTests", LikesToPlay = true }
         };
     }
 }

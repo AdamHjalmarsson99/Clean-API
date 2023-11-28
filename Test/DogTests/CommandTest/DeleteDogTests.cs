@@ -1,14 +1,7 @@
 ﻿using Application.Commands.Dogs.DeleteDog;
-using Application.Commands.Dogs.UpdateDog;
-using Application.Dtos;
 using Application.Queries.Dogs;
 using Application.Queries.Dogs.GetAll;
 using Infrastructure.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test.DogTests.CommandTest
 {

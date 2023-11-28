@@ -31,6 +31,9 @@ namespace Infrastructure.Database
             new Bird { Id = Guid.NewGuid(), Name = "Bergkamp", CanFly = false },
             new Bird { Id = Guid.NewGuid(), Name = "Rooney", CanFly = true },
             new Bird { Id = Guid.NewGuid(), Name = "Cambiasso", CanFly = false },
+            new Bird { Id = new Guid("60fdbc14-3f6c-4ddb-90a5-89c2e465be12"), Name = "TestBirdForUnitTests", CanFly = true },
+            new Bird { Id = new Guid("65113f59-a1c8-4c0d-9215-cf407efb2108"), Name = "TestBirdForUpdateTests", CanFly = false },
+            new Bird { Id = new Guid("94d807a1-5de4-4779-9f97-dd6a7173d207"), Name = "TestBirdForDeleteTests", CanFly = false }
         };
     }
 }

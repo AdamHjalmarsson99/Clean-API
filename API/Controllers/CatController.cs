@@ -5,6 +5,7 @@ using Application.Dtos;
 using Application.Queries.Cats.GetAll;
 using Application.Queries.Cats.GetById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -36,6 +37,7 @@ namespace API.Controllers
 
         // Create a new cat 
         [HttpPost]
+        [Authorize]
         [Route("addNewCat")]
         public async Task<IActionResult> AddCat([FromBody] CatDto newCat)
         {
@@ -44,6 +46,7 @@ namespace API.Controllers
 
         // Update a specific cat by id
         [HttpPut]
+        [Authorize]
         [Route("updateCat/{updatedCatId}")]
         public async Task<IActionResult> UpdateCat([FromBody] CatDto updatedCat, Guid updatedCatId)
         {
@@ -52,6 +55,7 @@ namespace API.Controllers
 
         //Delete a specific cat by id
         [HttpDelete]
+        [Authorize(Roles = ("Admin"))]
         [Route("deleteCatById/{catId}")]
         public async Task<IActionResult> DeleteCatById(Guid catId)
         {

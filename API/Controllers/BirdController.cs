@@ -10,6 +10,7 @@ using Application.Queries.Birds.GetById;
 using Application.Queries.Dogs.GetAll;
 using Application.Queries.Dogs.GetById;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,6 +45,7 @@ namespace API.Controllers
 
         // Create a new bird 
         [HttpPost]
+        [Authorize]
         [Route("addNewBird")]
         public async Task<IActionResult> AddBird([FromBody] BirdDto newBird)
         {
@@ -53,6 +55,7 @@ namespace API.Controllers
 
         // Update a specific bird by id
         [HttpPut]
+        [Authorize]
         [Route("updateBird/{updatedBirdId}")]
         public async Task<IActionResult> UpdateBird([FromBody] BirdDto updatedBird, Guid updatedBirdId)
         {
@@ -61,6 +64,7 @@ namespace API.Controllers
 
         //Delete a specific bird by id
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         [Route("deleteBirdById/{birdId}")]
         public async Task<IActionResult> DeleteBirdById(Guid birdId)
         {

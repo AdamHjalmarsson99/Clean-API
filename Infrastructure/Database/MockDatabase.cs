@@ -22,6 +22,12 @@ namespace Infrastructure.Database
             set { allCats = value; }
         }
 
+        public List<User> Users
+        {
+            get { return allUsers; }
+            set { allUsers = value; }
+        }
+
         private static List<Dog> allDogs = new()
         {
             new Dog { Id = Guid.NewGuid(), Name = "Björn"},
@@ -50,6 +56,12 @@ namespace Infrastructure.Database
             new Cat { Id = new Guid("bf49c5e3-e438-42e7-8f2f-4a6d3656757d"), Name = "TestCatForUnitTests", LikesToPlay = true },
             new Cat { Id = new Guid("e4490bed-d15e-4d80-84e7-239dd90bf587"), Name = "TestCatForUpdateTests", LikesToPlay = false },
             new Cat { Id = new Guid("559c67b0-7baf-45cf-980f-5d424c142b69"), Name = "TestCatForDeleteTests", LikesToPlay = true }
+        };
+
+        private static List<User> allUsers = new()
+        {
+            new User{UserName = "Admin", Password = "Boss"},
+            new User{UserName = "noob", Password = "noob"}
         };
     }
 }

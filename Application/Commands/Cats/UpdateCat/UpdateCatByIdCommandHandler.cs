@@ -21,6 +21,7 @@ namespace Application.Commands.Cats.UpdateCat
 
 
             catToUpdate.Name = request.UpdatedCat.Name;
+            catToUpdate.LikesToPlay = request.UpdatedCat.LikesToPlay;
 
             return Task.FromResult(catToUpdate);
         }

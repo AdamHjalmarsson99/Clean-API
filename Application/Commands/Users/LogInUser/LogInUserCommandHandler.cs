@@ -63,7 +63,7 @@ namespace Application.Commands.Users.LogInUser
                 issuer: Issuer,
                 audience: Audience,
                 claims: claims,
-                expires: DateTime.Now.AddHours(30),
+                expires: DateTime.Now.AddHours(2),
                 signingCredentials: credentials);
 
             var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);

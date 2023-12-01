@@ -1,5 +1,4 @@
-﻿using Application.Commands.Birds.AddBird;
-using Domain.Models;
+﻿using Domain.Models;
 using Infrastructure.Database;
 using MediatR;
 
@@ -23,6 +22,7 @@ namespace Application.Commands.Birds.UpdateBird
 
 
             birdToUpdate.Name = request.UpdatedBird.Name;
+            birdToUpdate.CanFly = request.UpdatedBird.CanFly;
 
             return Task.FromResult(birdToUpdate);
         }

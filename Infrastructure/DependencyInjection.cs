@@ -12,7 +12,7 @@ namespace Infrastructure
             services.AddDbContext<RealDatabase>();
             return services;
 
-            
+
         }
     }
 }

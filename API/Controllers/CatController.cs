@@ -4,6 +4,7 @@ using Application.Commands.Cats.UpdateCat;
 using Application.Dtos;
 using Application.Queries.Cats.GetAll;
 using Application.Queries.Cats.GetById;
+using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,18 +40,51 @@ namespace API.Controllers
         [HttpPost]
         [Authorize]
         [Route("addNewCat")]
+        [ProducesResponseType(typeof(Cat), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddCat([FromBody] CatDto newCat)
         {
-            return Ok(await _mediator.Send(new AddCatCommand(newCat)));
+            //Validate inputdata
+            var validator = new AddCatCommandValidator();
+            var validationReslut = validator.Validate(new AddCatCommand(newCat));
+
+            if (!validationReslut.IsValid)
+            {
+                return BadRequest(validationReslut.Errors.Select(error => error.ErrorMessage));
+            }
+
+            //If Validation succeds send command to meditor
+            var createdCat = await _mediator.Send(new AddCatCommand(newCat));
+
+            //Return OK with createdbird
+            return Ok(createdCat);
         }
 
         // Update a specific cat by id
         [HttpPut]
         [Authorize]
         [Route("updateCat/{updatedCatId}")]
+        [ProducesResponseType(typeof(Cat), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateCat([FromBody] CatDto updatedCat, Guid updatedCatId)
         {
-            return Ok(await _mediator.Send(new UpdateCatByIdCommand(updatedCat, updatedCatId)));
+            var updateCatCommand = new UpdateCatByIdCommand(updatedCat, updatedCatId);
+            var validationResult = await new UpdateCatByIdCommandValidator().ValidateAsync(updateCatCommand);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors.Select(error => error.ErrorMessage));
+            }
+
+            var updatedCatResult = await _mediator.Send(updateCatCommand);
+
+            if (updatedCatResult == null)
+            {
+                return NotFound($"Cat with ID {updatedCatId} not found.");
+            }
+
+            return Ok(updatedCatResult);
         }
 
         //Delete a specific cat by id

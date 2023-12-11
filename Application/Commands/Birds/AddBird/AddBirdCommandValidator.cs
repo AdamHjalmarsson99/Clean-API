@@ -4,7 +4,7 @@ namespace Application.Commands.Birds.AddBird
 {
     public class AddBirdCommandValidator : AbstractValidator<AddBirdCommand>
     {
-        public AddBirdCommandValidator() 
+        public AddBirdCommandValidator()
         {
             RuleFor(x => x.NewBird.Name)
                 .NotEmpty().WithMessage("Name cannot be null or empty!")

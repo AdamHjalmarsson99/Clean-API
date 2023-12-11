@@ -4,7 +4,7 @@ namespace Application.Commands.Cats.UpdateCat
 {
     public class UpdateCatByIdCommandValidator : AbstractValidator<UpdateCatByIdCommand>
     {
-        public UpdateCatByIdCommandValidator() 
+        public UpdateCatByIdCommandValidator()
         {
 
             RuleFor(x => x.UpdatedCat.Name).NotEmpty().WithMessage("Name can't be null or empty!")

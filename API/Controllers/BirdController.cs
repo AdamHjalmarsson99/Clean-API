@@ -83,7 +83,7 @@ namespace API.Controllers
 
             var updatedBirdResult = await _mediator.Send(updateBirdCommand);
 
-            if(updatedBirdResult == null)
+            if (updatedBirdResult == null)
             {
                 return NotFound($"Bird with ID {updatedBirdId} not found.");
             }

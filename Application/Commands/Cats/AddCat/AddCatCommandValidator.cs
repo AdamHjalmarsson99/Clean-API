@@ -4,8 +4,8 @@ namespace Application.Commands.Cats.AddCat
 {
     public class AddCatCommandValidator : AbstractValidator<AddCatCommand>
     {
-        public AddCatCommandValidator() 
-        { 
+        public AddCatCommandValidator()
+        {
             RuleFor(x => x.NewCat.Name).NotEmpty().WithMessage("Name can't be null or empty!")
                 .Matches("^[a-zA-Z ]*$").WithMessage("The name can only contain letters!");
 

@@ -1,10 +1,6 @@
-﻿using Application.Commands.Birds.DeleteBird;
-using Application.Commands.Users.AddNewUsers;
-using Application.Commands.Users.LogInUser;
+﻿using Application.Commands.Users.LogInUser;
 using Application.Dtos;
-using Domain.Models;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -18,23 +14,6 @@ namespace API.Controllers
         public AuthController(IMediator mediator)
         {
             _mediator = mediator;
-        }
-
-        //Create new user
-        [HttpPost]
-        [Route("addNewUser")]
-        public async Task<IActionResult> AddNewUser([FromBody] UserDto addNewUser)
-        {
-            var addUserCommand = new AddNewUserCommand(addNewUser);
-
-            var result = await _mediator.Send(addUserCommand);
-
-            if (result != null)
-            {
-                return Ok(new { Message = "User created successfully." });
-            }
-
-            return BadRequest(new { Message = "Failed to create user." });
         }
 
         [HttpPost]

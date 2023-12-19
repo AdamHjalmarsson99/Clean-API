@@ -1,7 +1,7 @@
 ﻿using Application.Commands.Dogs.DeleteDog;
-using Application.Queries.Dogs;
-using Application.Queries.Dogs.GetAll;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Dogs;
+using Moq;
 
 namespace Test.DogTests.CommandTest
 {
@@ -10,31 +10,35 @@ namespace Test.DogTests.CommandTest
         [TestFixture]
         public class UpdateDogTests
         {
+            private Mock<IDogRepository> _mockDogRepository;
             private DeleteDogByIdCommandHandler _handler;
-            private GetAllDogsQueryHandler _allDogsHandler;
-            private MockDatabase _mockDatabase;
 
             [SetUp]
             public void SetUp()
             {
-                _mockDatabase = new MockDatabase();
-                _handler = new DeleteDogByIdCommandHandler(_mockDatabase);
-                _allDogsHandler = new GetAllDogsQueryHandler(_mockDatabase);
+                _mockDogRepository = new Mock<IDogRepository>();
+                _handler = new DeleteDogByIdCommandHandler(_mockDogRepository.Object);
             }
 
             [Test]
             public async Task Handle_ValidIdDeleteDog_ReturnsDeletedDog()
             {
-                //Arrange
+                // Arrange
                 var deleteDogCommand = new DeleteDogByIdCommand(new Guid("6ec82d4a-49e7-41b1-a438-845043ee7fc7"));
+                var expectedDeletedDog = new Dog { Id = deleteDogCommand.Id, Name = "DeletedDog" };
 
-                //Act
+                _mockDogRepository.Setup(repo => repo.GetById(deleteDogCommand.Id))
+                                   .ReturnsAsync(expectedDeletedDog);
+
+                _mockDogRepository.Setup(repo => repo.Delete(It.IsAny<Dog>()))
+                                   .ReturnsAsync(expectedDeletedDog);
+
+                // Act
                 var deletedDog = await _handler.Handle(deleteDogCommand, CancellationToken.None);
-                var deletedDogdata = await _allDogsHandler.Handle(new GetAllDogsQuery(), CancellationToken.None);
 
-                //Assert
-                Assert.NotNull(deletedDog);
-                Assert.That(deletedDogdata, Does.Not.Contain(deletedDog));
+                // Assert
+                Assert.That(deletedDog, Is.Not.Null);
+                _mockDogRepository.Verify(repo => repo.Delete(It.Is<Dog>(dog => dog.Id == deleteDogCommand.Id)), Times.Once);
             }
 
             [Test]
@@ -44,11 +48,15 @@ namespace Test.DogTests.CommandTest
                 var invalidId = Guid.NewGuid();
                 var deleteDogCommand = new DeleteDogByIdCommand(invalidId);
 
+                _mockDogRepository.Setup(repo => repo.GetById(invalidId))
+                                   .ReturnsAsync((Dog)null!);
+
                 // Act
                 var deletedDog = await _handler.Handle(deleteDogCommand, CancellationToken.None);
 
                 // Assert
-                Assert.Null(deletedDog);
+                Assert.That(deletedDog, Is.Null);
+                _mockDogRepository.Verify(repo => repo.Delete(It.IsAny<Dog>()), Times.Never);
             }
         }
     }

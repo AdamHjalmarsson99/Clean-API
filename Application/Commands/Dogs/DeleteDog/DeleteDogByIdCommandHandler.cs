@@ -1,35 +1,30 @@
 ﻿using Domain.Models;
 using MediatR;
-using Infrastructure.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Infrastructure.Repositories.Dogs;
 
 namespace Application.Commands.Dogs.DeleteDog
 {
     public class DeleteDogByIdCommandHandler : IRequestHandler<DeleteDogByIdCommand, Dog>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IDogRepository _dogRepository;
 
-        public DeleteDogByIdCommandHandler(MockDatabase mockDatabase)
+        public DeleteDogByIdCommandHandler(IDogRepository dogRepository)
         {
-            _mockDatabase = mockDatabase;
+            _dogRepository = dogRepository;
         }
 
-        public Task<Dog> Handle(DeleteDogByIdCommand request, CancellationToken cancellationToken)
+        public async Task<Dog> Handle(DeleteDogByIdCommand request, CancellationToken cancellationToken)
         {
-            Dog dogToDelete = _mockDatabase.Dogs.FirstOrDefault(dog => dog.Id == request.Id)!;
+            var dogToDelete = await _dogRepository.GetById(request.Id);
 
             if (dogToDelete == null)
             {
-                return Task.FromResult<Dog>(null!);
+                return await Task.FromResult<Dog>(null!);
             }
 
-            _mockDatabase.Dogs.Remove(dogToDelete);
+            await _dogRepository.Delete(dogToDelete);
 
-            return Task.FromResult(dogToDelete);
+            return dogToDelete;
         }
     }
 }

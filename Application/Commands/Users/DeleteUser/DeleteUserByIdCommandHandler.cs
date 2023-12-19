@@ -1,30 +1,30 @@
 ﻿using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Repositories.Users;
 using MediatR;
 
 namespace Application.Commands.Users.DeleteUser
 {
     public class DeleteUserByIdCommandHandler : IRequestHandler<DeleteUserByIdCommand, User>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IUserRepository _userRepository;
 
-        public DeleteUserByIdCommandHandler(MockDatabase mockDatabase)
+        public DeleteUserByIdCommandHandler(IUserRepository userRepository)
         {
-            _mockDatabase = mockDatabase;
+            _userRepository = userRepository;
         }
 
-        public Task<User> Handle(DeleteUserByIdCommand request, CancellationToken cancellationToken)
+        public async Task<User> Handle(DeleteUserByIdCommand request, CancellationToken cancellationToken)
         {
-            User userToDelete = _mockDatabase.Users.FirstOrDefault(user => user.Id == request.Id)!;
+            var userToDelete = await _userRepository.GetById(request.Id);
 
             if (userToDelete == null)
             {
-                return Task.FromResult<User>(null!);
+                return await Task.FromResult<User>(null!);
             }
 
-            _mockDatabase.Users.Remove(userToDelete);
+            await _userRepository.Delete(userToDelete);
 
-            return Task.FromResult(userToDelete);
+            return userToDelete;
         }
     }
 }

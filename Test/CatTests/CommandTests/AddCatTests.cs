@@ -1,7 +1,8 @@
 ﻿using Application.Commands.Cats.AddCat;
 using Application.Dtos;
-using Application.Queries.Cats.GetAll;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Cats;
+using Moq;
 
 namespace Test.CatTests.CommandTests
 {
@@ -9,30 +10,32 @@ namespace Test.CatTests.CommandTests
     public class AddCatTests
     {
         private AddCatCommandHandler _handler;
-        private GetAllCatsQueryHandler _allCatsHandler;
-        private MockDatabase _mockDatabase;
+        private Mock<ICatRepository> _mockCatRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabase = new MockDatabase();
-            _handler = new AddCatCommandHandler(_mockDatabase);
-            _allCatsHandler = new GetAllCatsQueryHandler(_mockDatabase);
+            _mockCatRepository = new Mock<ICatRepository>();
+            _handler = new AddCatCommandHandler(_mockCatRepository.Object);
         }
 
         [Test]
         public async Task Handle_AddNewCatValid_ReturnsCreatedCat()
         {
-            //Arrange
-            var addCatCommand = new AddCatCommand(new CatDto { Name = "testCat" });
+            //Create a testobject for AddCatCommand
+            // Arrange
+            var addCatCommand = new AddCatCommand(new CatDto { Name = "testCat", LikesToPlay = true });
+            var expectedAddedCat = new Cat(); // Set your expected Cat here
 
-            //Act
+            _mockCatRepository.Setup(repo => repo.Add(It.IsAny<Cat>()))
+                              .ReturnsAsync(expectedAddedCat);
+
+            // Act
             var newAddedCat = await _handler.Handle(addCatCommand, CancellationToken.None);
-            var allCats = await _allCatsHandler.Handle(new GetAllCatsQuery(), CancellationToken.None);
 
-            //Assert
-            Assert.NotNull(newAddedCat);
-            Assert.Contains(newAddedCat, allCats);
+            //Check so the return value isn't null
+            // Assert
+            Assert.That(newAddedCat, Is.Not.Null);
         }
     }
 }

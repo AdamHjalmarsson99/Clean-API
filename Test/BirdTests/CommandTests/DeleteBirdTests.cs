@@ -1,37 +1,42 @@
 ﻿using Application.Commands.Birds.DeleteBird;
-using Application.Queries.Birds.GetAll;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Birds;
+using Moq;
 
 namespace Test.BirdTests.CommandTests
 {
     [TestFixture]
     public class DeleteBirdTests
     {
+        private Mock<IBirdRepository> _mockBirdRepository;
         private DeleteBirdByIdCommandHandler _handler;
-        private GetAllBirdsQueryHandler _allBirdsHandler;
-        private MockDatabase _mockDatabase;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabase = new MockDatabase();
-            _handler = new DeleteBirdByIdCommandHandler(_mockDatabase);
-            _allBirdsHandler = new GetAllBirdsQueryHandler(_mockDatabase);
+            _mockBirdRepository = new Mock<IBirdRepository>();
+            _handler = new DeleteBirdByIdCommandHandler(_mockBirdRepository.Object);
         }
 
         [Test]
         public async Task Handle_ValidIdDeleteBird_ReturnsDeletedBird()
         {
-            //Arrange
+            // Arrange
             var deleteBirdCommand = new DeleteBirdByIdCommand(new Guid("94d807a1-5de4-4779-9f97-dd6a7173d207"));
+            var expectedDeletedBird = new Bird { Id = deleteBirdCommand.Id, Name = "DeletedBird" };
 
-            //Act
+            _mockBirdRepository.Setup(repo => repo.GetById(deleteBirdCommand.Id))
+                               .ReturnsAsync(expectedDeletedBird);
+
+            _mockBirdRepository.Setup(repo => repo.Delete(It.IsAny<Bird>()))
+                               .ReturnsAsync(expectedDeletedBird);
+
+            // Act
             var deletedBird = await _handler.Handle(deleteBirdCommand, CancellationToken.None);
-            var deletedBirddata = await _allBirdsHandler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
 
-            //Assert
-            Assert.NotNull(deletedBird);
-            Assert.That(deletedBirddata, Does.Not.Contain(deletedBird));
+            // Assert
+            Assert.That(deletedBird, Is.Not.Null);
+            _mockBirdRepository.Verify(repo => repo.Delete(It.Is<Bird>(bird => bird.Id == deleteBirdCommand.Id)), Times.Once);
         }
 
         [Test]
@@ -41,11 +46,15 @@ namespace Test.BirdTests.CommandTests
             var invalidId = Guid.NewGuid();
             var deleteBirdCommand = new DeleteBirdByIdCommand(invalidId);
 
+            _mockBirdRepository.Setup(repo => repo.GetById(invalidId))
+                               .ReturnsAsync((Bird)null!);
+
             // Act
             var deletedBird = await _handler.Handle(deleteBirdCommand, CancellationToken.None);
 
             // Assert
-            Assert.Null(deletedBird);
+            Assert.That(deletedBird, Is.Null);
+            _mockBirdRepository.Verify(repo => repo.Delete(It.IsAny<Bird>()), Times.Never);
         }
 
     }

@@ -1,19 +1,19 @@
 ﻿using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Repositories.Dogs;
 using MediatR;
 
 namespace Application.Commands.Dogs
 {
     public class AddDogCommandHandler : IRequestHandler<AddDogCommand, Dog>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IDogRepository _dogRepository;
 
-        public AddDogCommandHandler(MockDatabase mockDatabase)
+        public AddDogCommandHandler(IDogRepository dogRepository)
         {
-            _mockDatabase = mockDatabase;
+            _dogRepository = dogRepository;
         }
 
-        public Task<Dog> Handle(AddDogCommand request, CancellationToken cancellationToken)
+        public async Task<Dog> Handle(AddDogCommand request, CancellationToken cancellationToken)
         {
             Dog dogToCreate = new()
             {
@@ -21,9 +21,9 @@ namespace Application.Commands.Dogs
                 Name = request.NewDog.Name
             };
 
-            _mockDatabase.Dogs.Add(dogToCreate);
+            await _dogRepository.Add(dogToCreate);
 
-            return Task.FromResult(dogToCreate);
+            return dogToCreate;
         }
     }
 }

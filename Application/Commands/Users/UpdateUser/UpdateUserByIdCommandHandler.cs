@@ -1,31 +1,32 @@
 ﻿using Domain.Models;
 using Infrastructure.Database;
+using Infrastructure.Repositories.Users;
 using MediatR;
 
 namespace Application.Commands.Users.UpdateUser
 {
     public class UpdateUserByIdCommandHandler : IRequestHandler<UpdateUserByIdCommand, User>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IUserRepository _userRepository;
 
-        public UpdateUserByIdCommandHandler(MockDatabase mockDatabase)
+        public UpdateUserByIdCommandHandler(IUserRepository userRepository)
         {
-            _mockDatabase = mockDatabase;
+            _userRepository = userRepository;
         }
-        public Task<User> Handle(UpdateUserByIdCommand request, CancellationToken cancellationToken)
+        public async Task<User> Handle(UpdateUserByIdCommand request, CancellationToken cancellationToken)
         {
-            User userToUpdate = _mockDatabase.Users.FirstOrDefault(user => user.Id == request.Id)!;
+            var userToUpdate = await _userRepository.GetById(request.Id);
 
             if (userToUpdate == null)
-                return Task.FromResult<User>(null!);
+                return await Task.FromResult<User>(null!);
 
 
             userToUpdate.UserName = request.UpdatedUser.UserName;
             userToUpdate.Password = request.UpdatedUser.Password;
 
-            return Task.FromResult(userToUpdate);
+            await _userRepository.Update(userToUpdate);
+
+            return userToUpdate;
         }
     }
-
-
 }

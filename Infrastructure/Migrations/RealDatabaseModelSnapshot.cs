@@ -35,6 +35,26 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Birds");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0d94352d-4cec-44e6-a101-8375092c89a5"),
+                            CanFly = true,
+                            Name = "Mitrovic"
+                        },
+                        new
+                        {
+                            Id = new Guid("4c344ccd-961a-4231-b59f-2f700c49736c"),
+                            CanFly = false,
+                            Name = "Klose"
+                        },
+                        new
+                        {
+                            Id = new Guid("6d5b0ba1-3b12-4b6b-8111-835230a8fe0b"),
+                            CanFly = true,
+                            Name = "Gomez"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Cat", b =>
@@ -53,6 +73,26 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cats");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("68ed9d86-73bf-4246-bd60-6590b17f3829"),
+                            LikesToPlay = false,
+                            Name = "Cambiasso"
+                        },
+                        new
+                        {
+                            Id = new Guid("3b650789-d4df-4d6b-b3c6-5917b3fffcb4"),
+                            LikesToPlay = true,
+                            Name = "Sneijder"
+                        },
+                        new
+                        {
+                            Id = new Guid("00e7a653-c570-4a67-a8fc-0af3ead19d62"),
+                            LikesToPlay = true,
+                            Name = "Santi Cazorla"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Dog", b =>
@@ -68,6 +108,23 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Dogs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("0a149b39-a81e-4973-85a0-e7db0425117e"),
+                            Name = "Mertesacker"
+                        },
+                        new
+                        {
+                            Id = new Guid("938ba316-7510-48f6-9c9c-d8ed56821240"),
+                            Name = "Nesta"
+                        },
+                        new
+                        {
+                            Id = new Guid("306109b2-a4a2-40f3-8401-32e5ec1dc5ba"),
+                            Name = "Saliba"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>
@@ -87,6 +144,20 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("42ce63d3-509c-4dc9-902a-d037db4f3a93"),
+                            Password = "Boss",
+                            UserName = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("f2423811-d5be-4f0f-8221-698ffa3ad615"),
+                            Password = "noob",
+                            UserName = "noob"
+                        });
                 });
 #pragma warning restore 612, 618
         }

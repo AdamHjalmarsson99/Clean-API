@@ -1,7 +1,8 @@
 ﻿using Application.Commands.Cats.UpdateCat;
 using Application.Dtos;
-using Application.Queries.Cats.GetAll;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Cats;
+using Moq;
 
 namespace Test.CatTests.CommandTests
 {
@@ -9,33 +10,34 @@ namespace Test.CatTests.CommandTests
     public class UpdateCatTests
     {
         private UpdateCatByIdCommandHandler _handler;
-        private GetAllCatsQueryHandler _allCatsHandler;
-        private MockDatabase _mockDatabase;
+        private Mock<ICatRepository> _mockCatRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabase = new MockDatabase();
-            _handler = new UpdateCatByIdCommandHandler(_mockDatabase);
-            _allCatsHandler = new GetAllCatsQueryHandler(_mockDatabase);
+            _mockCatRepository = new Mock<ICatRepository>();
+            _handler = new UpdateCatByIdCommandHandler(_mockCatRepository.Object);
         }
 
         [Test]
         public async Task Handle_ValidIdUpdateCat_ReturnsUpdatedCat()
         {
-            //Arrange
-            var updateCatCommand = new UpdateCatByIdCommand(new CatDto()
-            {
-                Name = "UpdateCat"
-            }, new Guid("e4490bed-d15e-4d80-84e7-239dd90bf587"));
+            // Arrange
+            var updateCatCommand = new UpdateCatByIdCommand(new CatDto { Name = "UpdateCat", LikesToPlay = true }, Guid.NewGuid());
 
-            //Act
+            _mockCatRepository.Setup(repo => repo.GetById(updateCatCommand.Id)).ReturnsAsync(new Cat { Id = updateCatCommand.Id, Name = "ExistingCat", LikesToPlay = true });
+            _mockCatRepository.Setup(repo => repo.Update(It.IsAny<Cat>()));
+
+            // Act
             var updatedCat = await _handler.Handle(updateCatCommand, CancellationToken.None);
-            var updatedCatData = await _allCatsHandler.Handle(new GetAllCatsQuery(), CancellationToken.None);
 
-            //Assert
-            Assert.NotNull(updatedCat);
-            Assert.That(updatedCatData, Does.Contain(updatedCat));
+            // Assert
+            Assert.That(updatedCat, Is.Not.Null);
+            Assert.That(updatedCat.Id, Is.EqualTo(updateCatCommand.Id));
+            Assert.That(updatedCat.Name, Is.EqualTo(updateCatCommand.UpdatedCat.Name));
+            Assert.That(updatedCat.LikesToPlay, Is.EqualTo(updateCatCommand.UpdatedCat.LikesToPlay));
+
+            _mockCatRepository.Verify(repo => repo.Update(It.IsAny<Cat>()), Times.Once);
         }
 
         [Test]
@@ -43,16 +45,17 @@ namespace Test.CatTests.CommandTests
         {
             // Arrange
             var invalidId = Guid.NewGuid();
-            var updateCatCommand = new UpdateCatByIdCommand(new CatDto
-            {
-                Name = "UpdateCatInvalid"
-            }, invalidId);
+            var updateCatCommand = new UpdateCatByIdCommand(new CatDto { Name = "Update", LikesToPlay = false }, invalidId);
+
+            _mockCatRepository.Setup(repo => repo.GetById(invalidId)).ReturnsAsync((Cat)null!);
+            _mockCatRepository.Setup(repo => repo.Update(It.IsAny<Cat>()));
 
             // Act
-            var updatedCat = await _handler.Handle(updateCatCommand, CancellationToken.None);
+            var updatedCat = await _handler.Handle(updateCatCommand, default);
 
             // Assert
-            Assert.Null(updatedCat);
+            Assert.That(updatedCat, Is.Null);
+            _mockCatRepository.Verify(repo => repo.Update(It.IsAny<Cat>()), Times.Never);
         }
     }
 }

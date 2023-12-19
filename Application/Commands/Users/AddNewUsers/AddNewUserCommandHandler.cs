@@ -1,19 +1,19 @@
 ﻿using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Repositories.Users;
 using MediatR;
 
 namespace Application.Commands.Users.AddNewUsers
 {
     public class AddNewUserCommandHandler : IRequestHandler<AddNewUserCommand, User>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IUserRepository _userRepository;
 
-        public AddNewUserCommandHandler()
+        public AddNewUserCommandHandler(IUserRepository userRepository)
         {
-            _mockDatabase = new MockDatabase();
+            _userRepository = userRepository;
         }
 
-        public Task<User> Handle(AddNewUserCommand request, CancellationToken cancellationToken)
+        public async Task<User> Handle(AddNewUserCommand request, CancellationToken cancellationToken)
         {
             User userToCreate = new()
             {
@@ -22,11 +22,9 @@ namespace Application.Commands.Users.AddNewUsers
                 Password = request.AddNewUser.Password
             };
 
-            _mockDatabase.Users.Add(userToCreate);
+            await _userRepository.Add(userToCreate);
 
-            return Task.FromResult(userToCreate);
+            return userToCreate;
         }
     }
-
-
 }

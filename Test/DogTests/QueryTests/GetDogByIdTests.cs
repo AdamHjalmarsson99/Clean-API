@@ -1,5 +1,7 @@
 ﻿using Application.Queries.Dogs.GetById;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Dogs;
+using Moq;
 
 namespace Test.DogTests.QueryTest
 {
@@ -7,14 +9,13 @@ namespace Test.DogTests.QueryTest
     public class GetDogByIdTests
     {
         private GetDogByIdQueryHandler _handler;
-        private MockDatabase _mockDatabase;
+        private Mock<IDogRepository> _mockDogRepository;
 
         [SetUp]
         public void SetUp()
         {
-            // Initialize the handler and mock database before each test
-            _mockDatabase = new MockDatabase();
-            _handler = new GetDogByIdQueryHandler(_mockDatabase);
+            _mockDogRepository = new Mock<IDogRepository>();
+            _handler = new GetDogByIdQueryHandler(_mockDogRepository.Object);
         }
 
         [Test]
@@ -24,12 +25,16 @@ namespace Test.DogTests.QueryTest
             var dogId = new Guid("12345678-1234-5678-1234-567812345678");
             var query = new GetDogByIdQuery(dogId);
 
+            _mockDogRepository.Setup(repo => repo.GetById(dogId)).ReturnsAsync(new Dog { Id = dogId, Name = "MockedDog" });
+
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.NotNull(result);
+            Assert.That(result, Is.Not.Null);
             Assert.That(result.Id, Is.EqualTo(dogId));
+
+            _mockDogRepository.Verify(repo => repo.GetById(dogId), Times.Once);
         }
 
         [Test]
@@ -37,14 +42,16 @@ namespace Test.DogTests.QueryTest
         {
             // Arrange
             var invalidDogId = Guid.NewGuid();
-
             var query = new GetDogByIdQuery(invalidDogId);
+
+            _mockDogRepository.Setup(repo => repo.GetById(invalidDogId)).ReturnsAsync((Dog)null!);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
+            _mockDogRepository.Verify(repo => repo.GetById(It.IsAny<Guid>()), Times.Once);
         }
     }
 }

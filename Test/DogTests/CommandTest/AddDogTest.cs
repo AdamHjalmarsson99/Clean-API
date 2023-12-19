@@ -1,8 +1,8 @@
 ﻿using Application.Commands.Dogs;
 using Application.Dtos;
-using Application.Queries.Dogs;
-using Application.Queries.Dogs.GetAll;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Dogs;
+using Moq;
 
 namespace Test.DogTests.CommandTest
 {
@@ -10,30 +10,32 @@ namespace Test.DogTests.CommandTest
     public class AddDogTest
     {
         private AddDogCommandHandler _handler;
-        private GetAllDogsQueryHandler _allDogsHandler;
-        private MockDatabase _mockDatabase;
+        private Mock<IDogRepository> _mockDogRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabase = new MockDatabase();
-            _handler = new AddDogCommandHandler(_mockDatabase);
-            _allDogsHandler = new GetAllDogsQueryHandler(_mockDatabase);
+            _mockDogRepository = new Mock<IDogRepository>();
+            _handler = new AddDogCommandHandler(_mockDogRepository.Object);
         }
 
         [Test]
         public async Task Handle_AddNewDogValid_ReturnsCreatedDog()
         {
-            //Arrange
+            //Create a testobject for AddDogCommand
+            // Arrange
             var addDogCommand = new AddDogCommand(new DogDto { Name = "testDog" });
+            var expectedAddedDog = new Dog(); // Set your expected Dog here
 
-            //Act
+            _mockDogRepository.Setup(repo => repo.Add(It.IsAny<Dog>()))
+                              .ReturnsAsync(expectedAddedDog);
+
+            // Act
             var newAddedDog = await _handler.Handle(addDogCommand, CancellationToken.None);
-            var allDogs = await _allDogsHandler.Handle(new GetAllDogsQuery(), CancellationToken.None);
 
-            //Assert
-            Assert.NotNull(newAddedDog);
-            Assert.Contains(newAddedDog, allDogs);
+            //Check so the return value isn't null
+            // Assert
+            Assert.That(newAddedDog, Is.Not.Null);
         }
     }
 }

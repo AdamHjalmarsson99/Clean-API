@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using Infrastructure.DatabaseHelpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.MySQLDb
@@ -23,7 +24,7 @@ namespace Infrastructure.MySQLDb
         {
             base.OnModelCreating(modelBuilder);
 
-            //DatabaseSeedHelper.SeedData(modelBuilder);
+            DatabaseSeedHelper.SeedData(modelBuilder);
         }
 
     }

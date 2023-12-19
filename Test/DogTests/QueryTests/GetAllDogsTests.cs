@@ -1,7 +1,9 @@
-﻿using Application.Queries.Dogs;
+﻿using Application.Queries.Birds.GetAll;
+using Application.Queries.Dogs;
 using Application.Queries.Dogs.GetAll;
 using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Repositories.Dogs;
+using Moq;
 
 namespace Test.DogTests.QueryTests
 {
@@ -9,27 +11,50 @@ namespace Test.DogTests.QueryTests
     public class GetAllDogsTests
     {
         private GetAllDogsQueryHandler _handler;
-        private MockDatabase _mockDatabase;
+        private Mock<IDogRepository> _mockDogRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabase = new MockDatabase();
-            _handler = new GetAllDogsQueryHandler(_mockDatabase);
+            _mockDogRepository = new Mock<IDogRepository>();
+            _handler = new GetAllDogsQueryHandler(_mockDogRepository.Object);
         }
 
         [Test]
         public async Task Handle_ValidDogList_ReturnsAllDogs()
         {
-            //Arrange
-            List<Dog> dogs = _mockDatabase.Dogs;
+            // Arrange
+            var expectedDogs = new List<Dog>
+            {
+                new Dog { Id = Guid.NewGuid(), Name = "Dog1"},
+                new Dog { Id = Guid.NewGuid(), Name = "Dog2" }
+            };
 
-            //Act
+            _mockDogRepository.Setup(repo => repo.GetAll()).ReturnsAsync(expectedDogs);
+
+            // Act
             var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
 
-            //Assert
-            Assert.NotNull(result);
-            Assert.That(result, Is.EqualTo(dogs));
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.EqualTo(expectedDogs));
+            _mockDogRepository.Verify(repo => repo.GetAll(), Times.Once);
+        }
+
+        [Test]
+        public async Task Handle_InvalidDogList_ReturnsEmptyList()
+        {
+            // Arrange
+            _mockDogRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Dog>());
+
+            // Act
+            var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result, Is.Empty);
+
+            _mockDogRepository.Verify(repo => repo.GetAll(), Times.Once);
         }
     }
 }

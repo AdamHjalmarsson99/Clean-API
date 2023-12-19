@@ -1,21 +1,21 @@
 ﻿using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Repositories.Users;
 using MediatR;
 
 namespace Application.Queries.Users.GetAll
 {
     public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<User>>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IUserRepository _userRepository;
 
-        public GetAllUsersQueryHandler(MockDatabase mockDatabase)
+        public GetAllUsersQueryHandler(IUserRepository userRepository)
         {
-            _mockDatabase = mockDatabase;
+            _userRepository = userRepository;
         }
-        public Task<List<User>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+        public async Task<List<User>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
         {
-            List<User> allUsersFromMockDatabase = _mockDatabase.Users;
-            return Task.FromResult(allUsersFromMockDatabase);
+            var allUsersFromRealDatabase = await _userRepository.GetAll();
+            return allUsersFromRealDatabase;
         }
     }
 }

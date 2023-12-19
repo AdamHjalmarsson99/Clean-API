@@ -1,7 +1,9 @@
 ﻿using Application.Commands.Birds.UpdateBird;
 using Application.Dtos;
 using Application.Queries.Birds.GetAll;
-using Infrastructure.Database;
+using Domain.Models;
+using Infrastructure.Repositories.Birds;
+using Moq;
 
 namespace Test.BirdTests.CommandTests
 {
@@ -9,33 +11,34 @@ namespace Test.BirdTests.CommandTests
     public class UpdateBirdTests
     {
         private UpdateBirdByIdCommandHandler _handler;
-        private GetAllBirdsQueryHandler _allBirdsHandler;
-        private MockDatabase _mockDatabase;
+        private Mock<IBirdRepository> _mockBirdRepository;
 
         [SetUp]
         public void SetUp()
         {
-            _mockDatabase = new MockDatabase();
-            _handler = new UpdateBirdByIdCommandHandler(_mockDatabase);
-            _allBirdsHandler = new GetAllBirdsQueryHandler(_mockDatabase);
+            _mockBirdRepository = new Mock<IBirdRepository>();
+            _handler = new UpdateBirdByIdCommandHandler(_mockBirdRepository.Object);
         }
 
         [Test]
         public async Task Handle_ValidIdUpdateBird_ReturnsUpdatedBird()
         {
-            //Arrange
-            var updateBirdCommand = new UpdateBirdByIdCommand(new BirdDto()
-            {
-                Name = "UpdateBird"
-            }, new Guid("65113f59-a1c8-4c0d-9215-cf407efb2108"));
+            // Arrange
+            var updateBirdCommand = new UpdateBirdByIdCommand(new BirdDto { Name = "UpdateBird", CanFly = true }, Guid.NewGuid());
 
-            //Act
+            _mockBirdRepository.Setup(repo => repo.GetById(updateBirdCommand.Id)).ReturnsAsync(new Bird { Id = updateBirdCommand.Id, Name = "ExistingBird", CanFly = true });
+            _mockBirdRepository.Setup(repo => repo.Update(It.IsAny<Bird>()));
+
+            // Act
             var updatedBird = await _handler.Handle(updateBirdCommand, CancellationToken.None);
-            var updatedBirdData = await _allBirdsHandler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
 
-            //Assert
-            Assert.NotNull(updatedBird);
-            Assert.That(updatedBirdData, Does.Contain(updatedBird));
+            // Assert
+            Assert.That(updatedBird, Is.Not.Null);
+            Assert.That(updatedBird.Id, Is.EqualTo(updateBirdCommand.Id));
+            Assert.That(updatedBird.Name, Is.EqualTo(updateBirdCommand.UpdatedBird.Name));
+            Assert.That(updatedBird.CanFly, Is.EqualTo(updateBirdCommand.UpdatedBird.CanFly));
+
+            _mockBirdRepository.Verify(repo => repo.Update(It.IsAny<Bird>()), Times.Once);
         }
 
         [Test]
@@ -43,16 +46,18 @@ namespace Test.BirdTests.CommandTests
         {
             // Arrange
             var invalidId = Guid.NewGuid();
-            var updateBirdCommand = new UpdateBirdByIdCommand(new BirdDto
-            {
-                Name = "UpdateBirdInvalid"
-            }, invalidId);
+            var updateBirdCommand = new UpdateBirdByIdCommand(new BirdDto { Name = "Update", CanFly = false }, invalidId);
+
+            _mockBirdRepository.Setup(repo => repo.GetById(invalidId)).ReturnsAsync((Bird)null!);
+            _mockBirdRepository.Setup(repo => repo.Update(It.IsAny<Bird>()));
 
             // Act
-            var updatedBird = await _handler.Handle(updateBirdCommand, CancellationToken.None);
+            var updatedBird = await _handler.Handle(updateBirdCommand, default);
 
             // Assert
-            Assert.Null(updatedBird);
+            Assert.That(updatedBird, Is.Null);
+            _mockBirdRepository.Verify(repo => repo.Update(It.IsAny<Bird>()), Times.Never); //Verify for extra safety. It checks so GetById is called only one time.
+                                                                                            //I might have to change depedending on how i want tyhe test to work in the future.
         }
     }
 }

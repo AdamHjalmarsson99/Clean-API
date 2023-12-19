@@ -1,22 +1,26 @@
 ﻿using Domain.Models;
-using Infrastructure.Database;
+using Infrastructure.Repositories.Users;
 using MediatR;
 
 namespace Application.Queries.Users.GetById
 {
-    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, User>
+    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, User?>
     {
-        private readonly MockDatabase _mockDatabase;
+        private readonly IUserRepository _userRepository;
 
-        public GetUserByIdQueryHandler(MockDatabase mockDatabase)
+        public GetUserByIdQueryHandler(IUserRepository userRepository)
         {
-            _mockDatabase = mockDatabase;
+            _userRepository = userRepository;
         }
 
-        public Task<User> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<User?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
-            User wantedUser = _mockDatabase.Users.FirstOrDefault(user => user.Id == request.Id)!;
-            return Task.FromResult(wantedUser);
+            if (request.Id == Guid.Empty)
+            {
+                return null;
+            }
+
+            return await _userRepository.GetById(request.Id);
         }
     }
 }

@@ -18,7 +18,9 @@ namespace Application.Commands.Dogs
             Dog dogToCreate = new()
             {
                 Id = Guid.NewGuid(),
-                Name = request.NewDog.Name
+                Name = request.NewDog.Name,
+                Breed = request.NewDog.Breed,
+                Weight = request.NewDog.Weight,
             };
 
             await _dogRepository.Add(dogToCreate);

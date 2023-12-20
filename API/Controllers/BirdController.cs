@@ -42,7 +42,7 @@ namespace API.Controllers
         // Create a new bird 
         [HttpPost]
         [Route("addNewBird")]
-        //[Authorize]
+        [Authorize]
         [ProducesResponseType(typeof(Bird), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddBird([FromBody] BirdDto newBird)

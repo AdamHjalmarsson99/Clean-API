@@ -16,27 +16,27 @@ namespace Infrastructure.DatabaseHelpers
         private static void SeedBirds(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Bird>().HasData(
-                new Bird { Id = Guid.NewGuid(), Name = "Mitrovic", CanFly = true },
-                new Bird { Id = Guid.NewGuid(), Name = "Klose", CanFly = false },
-                new Bird { Id = Guid.NewGuid(), Name = "Gomez", CanFly = true }
+                new Bird { Id = Guid.NewGuid(), Name = "Mitrovic", CanFly = true, Color = "White" },
+                new Bird { Id = Guid.NewGuid(), Name = "Klose", CanFly = false, Color = "Red" },
+                new Bird { Id = Guid.NewGuid(), Name = "Gomez", CanFly = true, Color = "Blue" }
                 );
         }
 
         private static void SeedCats(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cat>().HasData(
-                new Cat { Id = Guid.NewGuid(), Name = "Cambiasso", LikesToPlay = false },
-                new Cat { Id = Guid.NewGuid(), Name = "Sneijder", LikesToPlay = true },
-                new Cat { Id = Guid.NewGuid(), Name = "Santi Cazorla", LikesToPlay = true }
+                new Cat { Id = Guid.NewGuid(), Name = "Cambiasso", LikesToPlay = false, Breed = "Maine Coon", Weight = 12 },
+                new Cat { Id = Guid.NewGuid(), Name = "Sneijder", LikesToPlay = true, Breed = "Bengal", Weight = 5 },
+                new Cat { Id = Guid.NewGuid(), Name = "Santi Cazorla", LikesToPlay = true, Breed = "Burma", Weight = 7 }
                 );
         }
 
         private static void SeedDogs(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Dog>().HasData(
-                new Dog { Id = Guid.NewGuid(), Name = "Mertesacker" },
-                new Dog { Id = Guid.NewGuid(), Name = "Nesta" },
-                new Dog { Id = Guid.NewGuid(), Name = "Saliba" }
+                new Dog { Id = Guid.NewGuid(), Name = "Mertesacker", Breed = "Great Dane", Weight = 75 },
+                new Dog { Id = Guid.NewGuid(), Name = "Nesta", Breed = "Berner senner", Weight = 35 },
+                new Dog { Id = Guid.NewGuid(), Name = "Saliba", Breed = "Leonberger", Weight = 50 }
                 );
         }
 

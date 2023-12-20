@@ -7,5 +7,6 @@ namespace Domain.Models
     {
         [Required]
         public bool CanFly { get; set; }
+        public string Color { get; set; } = string.Empty;
     }
 }

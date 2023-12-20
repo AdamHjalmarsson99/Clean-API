@@ -25,7 +25,7 @@ namespace Test.BirdTests.CommandTests
             //Create a testobject for AddBirdCommand
             // Arrange
             var addBirdCommand = new AddBirdCommand(new BirdDto { Name = "testBird", CanFly = true });
-            var expectedAddedBird = new Bird(); // Set your expected bird here
+            var expectedAddedBird = new Bird();
 
             _mockBirdRepository.Setup(repo => repo.Add(It.IsAny<Bird>()))
                               .ReturnsAsync(expectedAddedBird);

@@ -22,10 +22,10 @@ namespace Test.UserTest.CommandTests
         [Test]
         public async Task Handle_AddNewUserValid_ReturnsCreatedUser()
         {
-            //Create a testobject for AddBirdCommand
+
             // Arrange
             var addUserCommand = new AddNewUserCommand(new UserDto { UserName = "testuser", Password = "pass" });
-            var expectedAddedUser = new User(); // Set your expected user here
+            var expectedAddedUser = new User();
 
             _mockUserRepository.Setup(repo => repo.Add(It.IsAny<User>()))
                               .ReturnsAsync(expectedAddedUser);

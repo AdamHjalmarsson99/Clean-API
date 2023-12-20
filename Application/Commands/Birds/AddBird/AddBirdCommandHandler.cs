@@ -20,6 +20,7 @@ namespace Application.Commands.Birds.AddBird
                 Id = Guid.NewGuid(),
                 Name = request.NewBird.Name,
                 CanFly = request.NewBird.CanFly,
+                Color = request.NewBird.Color,
             };
 
             await _birdRepository.Add(birdToCreate);

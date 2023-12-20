@@ -21,6 +21,8 @@ namespace Application.Commands.Dogs.UpdateDog
 
 
             dogToUpdate.Name = request.UpdatedDog.Name;
+            dogToUpdate.Breed = request.UpdatedDog.Breed;
+            dogToUpdate.Weight = request.UpdatedDog.Weight;
 
             await _dogRepository.Update(dogToUpdate);
 

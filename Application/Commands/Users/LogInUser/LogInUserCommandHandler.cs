@@ -84,7 +84,3 @@ namespace Application.Commands.Users.LogInUser
         //}
     }
 }
-
-//Du kommer att behöva göra en repo för LogIn då du kallar på databsen där i och kan inte inkludera det i User
-
-//Du måste då även flytta med generateToken till repot. Sen efter det ska du ändra alla handlers och tester för user. 

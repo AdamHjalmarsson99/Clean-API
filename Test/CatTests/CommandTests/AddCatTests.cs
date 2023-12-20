@@ -25,7 +25,7 @@ namespace Test.CatTests.CommandTests
             //Create a testobject for AddCatCommand
             // Arrange
             var addCatCommand = new AddCatCommand(new CatDto { Name = "testCat", LikesToPlay = true });
-            var expectedAddedCat = new Cat(); // Set your expected Cat here
+            var expectedAddedCat = new Cat();
 
             _mockCatRepository.Setup(repo => repo.Add(It.IsAny<Cat>()))
                               .ReturnsAsync(expectedAddedCat);

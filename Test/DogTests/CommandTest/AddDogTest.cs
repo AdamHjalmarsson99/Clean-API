@@ -25,7 +25,7 @@ namespace Test.DogTests.CommandTest
             //Create a testobject for AddDogCommand
             // Arrange
             var addDogCommand = new AddDogCommand(new DogDto { Name = "testDog" });
-            var expectedAddedDog = new Dog(); // Set your expected Dog here
+            var expectedAddedDog = new Dog();
 
             _mockDogRepository.Setup(repo => repo.Add(It.IsAny<Dog>()))
                               .ReturnsAsync(expectedAddedDog);

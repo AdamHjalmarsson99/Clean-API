@@ -38,7 +38,7 @@ namespace API.Controllers
 
         // Create a new cat 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         [Route("addNewCat")]
         [ProducesResponseType(typeof(Cat), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

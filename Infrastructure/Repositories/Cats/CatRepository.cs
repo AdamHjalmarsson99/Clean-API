@@ -15,13 +15,21 @@ namespace Infrastructure.Repositories.Cats
         //GLÖM INTE ATT ÄNDRA I ALLA QUERIES
         public async Task<List<Cat>> GetAll()
         {
-            //Tror att jag kan göra på detta viset
-            return await _realDatabase.Cats.ToListAsync();
+            var catsWithUsers = await _realDatabase.Cats
+                .Include(cat => cat.Users)
+                .ToListAsync();
+
+            return catsWithUsers;
         }
 
         public async Task<Cat?> GetById(Guid id)
         {
-            return await _realDatabase.Cats.FindAsync(id);
+            var catWithUsers = await _realDatabase.Cats
+                .Where(cat => cat.Id == id)
+                .Include(cat => cat.Users)
+                .FirstOrDefaultAsync();
+
+            return catWithUsers;
         }
 
         public async Task<Cat> Add(Cat cat)

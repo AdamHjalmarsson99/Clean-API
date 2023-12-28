@@ -24,7 +24,7 @@ namespace API.Controllers
         //Get all users
         [HttpGet]
         [Route("getAllUsers")]
-        public async Task<IActionResult> GetAllBirds()
+        public async Task<IActionResult> GetAllUsers()
         {
             return Ok(await _mediator.Send(new GetAllUsersQuery()));
         }
@@ -40,18 +40,34 @@ namespace API.Controllers
         //Create new user
         [HttpPost]
         [Route("addNewUser")]
-        public async Task<IActionResult> AddNewUser([FromBody] UserDto addNewUser)
+        public async Task<IActionResult> AddNewUser([FromBody] CreateUserDto addNewUser)
         {
-            var addUserCommand = new AddNewUserCommand(addNewUser);
+            //Validate inputdata
+            var validator = new AddNewUserCommandValidator();
+            var validationReslut = validator.Validate(new AddNewUserCommand(addNewUser));
 
-            var result = await _mediator.Send(addUserCommand);
-
-            if (result != null)
+            if (!validationReslut.IsValid)
             {
-                return Ok(new { Message = "User created successfully." });
+                return BadRequest(validationReslut.Errors.Select(error => error.ErrorMessage));
             }
 
-            return BadRequest(new { Message = "Failed to create user." });
+            var addUserCommand = new AddNewUserCommand(addNewUser);
+
+            try
+            {
+                return Ok(await _mediator.Send(new AddNewUserCommand(addNewUser)));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            //if (result != null)
+            //{
+            //    return Ok(new { Message = "User created successfully." });
+            //}
+
+            //return BadRequest(new { Message = "Failed to create user." });
         }
 
         // Update a specific user by id

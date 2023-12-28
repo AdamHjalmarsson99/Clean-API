@@ -23,19 +23,28 @@ namespace Test.UserTest.CommandTests
         public async Task Handle_AddNewUserValid_ReturnsCreatedUser()
         {
 
-            // Arrange
-            var addUserCommand = new AddNewUserCommand(new UserDto { UserName = "testuser", Password = "pass" });
+            //Arrange 
+            var addUserCommand = new AddNewUserCommand(new CreateUserDto
+            {
+                UserName = "TestUser",
+                Password = "Pass",
+                Dogs = new List<DogDto>(),
+                Cats = new List<CatDto>(),
+                Birds = new List<BirdDto>()
+            });
+
             var expectedAddedUser = new User();
 
             _mockUserRepository.Setup(repo => repo.Add(It.IsAny<User>()))
                               .ReturnsAsync(expectedAddedUser);
 
-            // Act
+            //// Act
             var newAddedUser = await _handler.Handle(addUserCommand, CancellationToken.None);
 
-            //Check so the return value isn't null
             // Assert
             Assert.That(newAddedUser, Is.Not.Null);
+            _mockUserRepository.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once());
+
         }
     }
 }

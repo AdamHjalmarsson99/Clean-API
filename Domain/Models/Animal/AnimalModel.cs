@@ -8,5 +8,6 @@ namespace Domain.Models.Animal
         public Guid Id { get; set; }
         [Required]
         public string Name { get; set; } = string.Empty;
+        public List<User> Users { get; set; }
     }
 }

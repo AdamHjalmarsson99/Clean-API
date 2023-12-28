@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Database;
 using Infrastructure.MySQLDb;
+using Infrastructure.Repositories.Animals;
 using Infrastructure.Repositories.Birds;
 using Infrastructure.Repositories.Cats;
 using Infrastructure.Repositories.Dogs;
@@ -16,6 +17,7 @@ namespace Infrastructure
             services.AddScoped<ICatRepository, CatRepository>();
             services.AddScoped<IDogRepository, DogRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddSingleton<MockDatabase>();
             services.AddDbContext<RealDatabase>();
             return services;

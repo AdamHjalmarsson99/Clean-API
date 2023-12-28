@@ -16,18 +16,21 @@ namespace Infrastructure.Repositories.Dogs
         //GLÖM INTE ATT ÄNDRA I ALLA QUERIES
         public async Task<List<Dog>> GetAll()
         {
-            //var listOfBirds = _realDatabase.Birds.ToList();
-            //return await Task.FromResult(listOfBirds);
+            var dogsWithUsers = await _realDatabase.Dogs
+                .Include(dog => dog.Users)
+                .ToListAsync();
 
-            //Tror att jag kan göra på detta viset
-            return await _realDatabase.Dogs.ToListAsync();
+            return dogsWithUsers;
         }
 
         public async Task<Dog?> GetById(Guid id)
         {
-            //var bird = await _realDatabase.Birds.FindAsync(id);
-            //return bird;
-            return await _realDatabase.Dogs.FindAsync(id);
+            var dogWithUsers = await _realDatabase.Dogs
+                .Where(dog => dog.Id == id)
+                .Include(dog => dog.Users)
+                .FirstOrDefaultAsync();
+
+            return dogWithUsers;
         }
 
         public async Task<Dog> Add(Dog dog)

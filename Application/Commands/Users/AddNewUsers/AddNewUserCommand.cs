@@ -6,10 +6,10 @@ namespace Application.Commands.Users.AddNewUsers
 {
     public class AddNewUserCommand : IRequest<User>
     {
-        public AddNewUserCommand(UserDto addNewUser)
+        public AddNewUserCommand(CreateUserDto addNewUser)
         {
             AddNewUser = addNewUser;
         }
-        public UserDto AddNewUser { get; }
+        public CreateUserDto AddNewUser { get; }
     }
 }

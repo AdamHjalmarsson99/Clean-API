@@ -26,12 +26,18 @@ namespace Infrastructure.Repositories.Users
         public async Task<List<User>> GetAll()
         {
             //Tror att jag kan göra på detta viset
-            return await _realDatabase.Users.ToListAsync();
+            var userList = _realDatabase.Users
+                .Include(x => x.Animals)
+                .ToList();
+            return await Task.FromResult(userList);
         }
 
         public async Task<User?> GetById(Guid id)
         {
-            return await _realDatabase.Users.FindAsync(id);
+            var user = _realDatabase.Users
+                .Include(x => x.Animals)
+                .FirstOrDefault(x => x.Id == id);
+            return await Task.FromResult(user);
         }
 
         public async Task<User> Add(User user)

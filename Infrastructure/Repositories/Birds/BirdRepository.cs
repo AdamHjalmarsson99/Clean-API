@@ -15,18 +15,21 @@ namespace Infrastructure.Repositories.Birds
         //GLÖM INTE ATT ÄNDRA I ALLA QUERIES
         public async Task<List<Bird>> GetAll()
         {
-            //var listOfBirds = _realDatabase.Birds.ToList();
-            //return await Task.FromResult(listOfBirds);
+            var birdsWithUsers = await _realDatabase.Birds
+                  .Include(bird => bird.Users)
+                  .ToListAsync();
 
-            //Tror att jag kan göra på detta viset
-            return await _realDatabase.Birds.ToListAsync();
+            return birdsWithUsers;
         }
 
         public async Task<Bird?> GetById(Guid id)
         {
-            //var bird = await _realDatabase.Birds.FindAsync(id);
-            //return bird;
-            return await _realDatabase.Birds.FindAsync(id);
+            var birdWithUsers = await _realDatabase.Birds
+                .Where(bird => bird.Id == id)
+                .Include(bird => bird.Users)
+                .FirstOrDefaultAsync();
+
+            return birdWithUsers;
         }
 
         public async Task<Bird> Add(Bird bird)

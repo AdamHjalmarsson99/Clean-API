@@ -23,7 +23,7 @@ namespace Test.CatTests.CommandTests
         {
             // Arrange
             var deleteCatCommand = new DeleteCatByIdCommand(new Guid("559c67b0-7baf-45cf-980f-5d424c142b69"));
-            var expectedDeletedCat = new Cat { Id = deleteCatCommand.Id, Name = "DeletedBird" };
+            var expectedDeletedCat = new Cat { Id = deleteCatCommand.Id, Name = "DeletedCat" };
 
             _mockCatRepository.Setup(repo => repo.GetById(deleteCatCommand.Id))
                                .ReturnsAsync(expectedDeletedCat);

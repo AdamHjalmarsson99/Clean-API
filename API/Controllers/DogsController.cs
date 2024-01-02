@@ -28,9 +28,9 @@ namespace API.Controllers
         // Get all dogs from database
         [HttpGet]
         [Route("getAllDogs")]
-        public async Task<IActionResult> GetAllDogs()
+        public async Task<IActionResult> GetAllDogs([FromQuery] string? breed, [FromQuery] int? weight)
         {
-            return Ok(await _mediator.Send(new GetAllDogsQuery()));
+            return Ok(await _mediator.Send(new GetAllDogsQuery { Breed = breed, Weight = weight }));
         }
 
         // Get a specific dog by Id

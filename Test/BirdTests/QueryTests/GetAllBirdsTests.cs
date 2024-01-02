@@ -22,37 +22,43 @@ namespace Test.BirdTests.QueryTests
         public async Task Handle_ValidBirdList_ReturnsAllBirds()
         {
             // Arrange
+            var expectedColor = "Blue";
+
             var expectedBirds = new List<Bird>
             {
-                new Bird { Id = Guid.NewGuid(), Name = "Bird1", CanFly = false },
-                new Bird { Id = Guid.NewGuid(), Name = "Bird2", CanFly = true }
+                new Bird { Id = Guid.NewGuid(), Name = "BlueBird1", Color = expectedColor, CanFly = false },
+                new Bird { Id = Guid.NewGuid(), Name = "BlueBird2", Color = expectedColor, CanFly = true }
             };
 
-            _mockBirdRepository.Setup(repo => repo.GetAll()).ReturnsAsync(expectedBirds);
+            _mockBirdRepository.Setup(repo => repo.GetAll(expectedColor)).ReturnsAsync(expectedBirds);
 
             // Act
-            var result = await _handler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
+            var result = await _handler.Handle(new GetAllBirdsQuery { Color = expectedColor }, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.EqualTo(expectedBirds));
-            _mockBirdRepository.Verify(repo => repo.GetAll(), Times.Once);
+            _mockBirdRepository.Verify(repo => repo.GetAll(expectedColor), Times.Once);
         }
 
         [Test]
         public async Task Handle_InvalidBirdList_ReturnsEmptyList()
         {
             // Arrange
-            _mockBirdRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Bird>());
+            var specifiedColor = "Black";
+            var query = new GetAllBirdsQuery { Color = specifiedColor };
+            var expectedBirds = new List<Bird>();
+
+            _mockBirdRepository.Setup(x => x.GetAll(specifiedColor)).ReturnsAsync(expectedBirds);
 
             // Act
-            var result = await _handler.Handle(new GetAllBirdsQuery(), CancellationToken.None);
+            var result = await _handler.Handle(query, default);
 
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Empty);
-
-            _mockBirdRepository.Verify(repo => repo.GetAll(), Times.Once);
+            Assert.That(result, Is.EqualTo(expectedBirds));
+            _mockBirdRepository.Verify(x => x.GetAll(specifiedColor), Times.Once);
         }
     }
 }

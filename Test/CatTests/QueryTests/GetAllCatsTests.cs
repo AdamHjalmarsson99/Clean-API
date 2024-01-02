@@ -1,4 +1,5 @@
 ﻿using Application.Queries.Cats.GetAll;
+using Application.Queries.Dogs.GetAll;
 using Domain.Models;
 using Infrastructure.Repositories.Cats;
 using Moq;
@@ -21,22 +22,25 @@ namespace Test.CatTests.QueryTests
         [Test]
         public async Task Handle_ValidCatList_ReturnsAllCats()
         {
-            //Arrange
+            var specifiedBreed = "Maine Coon";
+            var specifiedWeight = 14;
+
+            var query = new GetAllCatsQuery { Breed = specifiedBreed, Weight = specifiedWeight };
             var expectedCats = new List<Cat>
             {
-                new Cat {Id = Guid.NewGuid(), Name = "Cat1", LikesToPlay = true },
-                new Cat {Id = Guid.NewGuid(), Name = "Cat2", LikesToPlay = false }
+                new Cat { Id = Guid.NewGuid(), Breed = specifiedBreed, Weight = specifiedWeight, Name = "Cat1" },
+                new Cat { Id = Guid.NewGuid(), Breed = specifiedBreed, Weight = specifiedWeight, Name = "Cat2" }
             };
 
-            _mockCatRepository.Setup(_repo => _repo.GetAll()).ReturnsAsync(expectedCats);
+            _mockCatRepository.Setup(x => x.GetAll(specifiedBreed, specifiedWeight)).ReturnsAsync(expectedCats);
 
-            //Act
-            var result = await _handler.Handle(new GetAllCatsQuery(), CancellationToken.None);
+            // Act
+            var result = await _handler.Handle(query, default);
 
-            //Assert
+            // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.EqualTo(expectedCats));
-            _mockCatRepository.Verify(repo => repo.GetAll(), Times.Once);
+            _mockCatRepository.Verify(x => x.GetAll(specifiedBreed, specifiedWeight), Times.Once);
         }
 
 
@@ -44,16 +48,21 @@ namespace Test.CatTests.QueryTests
         public async Task Handle_InvalidCatList_ReturnsEmptyList()
         {
             // Arrange
-            _mockCatRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Cat>());
+            var specifiedBreed = "Bengal";
+            var specifiedWeight = 7;
+            var query = new GetAllCatsQuery { Breed = specifiedBreed, Weight = specifiedWeight };
+            var expectedCats = new List<Cat>();
+
+            _mockCatRepository.Setup(x => x.GetAll(specifiedBreed, specifiedWeight)).ReturnsAsync(expectedCats);
 
             // Act
-            var result = await _handler.Handle(new GetAllCatsQuery(), CancellationToken.None);
+            var result = await _handler.Handle(query, default);
 
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Empty);
-
-            _mockCatRepository.Verify(repo => repo.GetAll(), Times.Once);
+            Assert.That(result, Is.EqualTo(expectedCats));
+            _mockCatRepository.Verify(x => x.GetAll(specifiedBreed, specifiedWeight), Times.Once);
         }
     }
 }

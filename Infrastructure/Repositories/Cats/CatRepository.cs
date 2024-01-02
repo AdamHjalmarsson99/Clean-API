@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Infrastructure.MySQLDb;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Drawing2D;
 
 namespace Infrastructure.Repositories.Cats
 {
@@ -12,14 +13,21 @@ namespace Infrastructure.Repositories.Cats
             _realDatabase = realDatabase;
         }
 
-        //GLÖM INTE ATT ÄNDRA I ALLA QUERIES
-        public async Task<List<Cat>> GetAll()
+        public async Task<List<Cat>> GetAll(string? breed, int? weight)
         {
-            var catsWithUsers = await _realDatabase.Cats
-                .Include(cat => cat.Users)
-                .ToListAsync();
+            var query = _realDatabase.Cats.AsQueryable();
 
-            return catsWithUsers;
+            if (!string.IsNullOrEmpty(breed))
+            {
+                query = query.Where(cat => cat.Breed == breed);
+            }
+
+            if (weight.HasValue)
+            {
+                query = query.Where(cat => cat.Weight == weight.Value);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Cat?> GetById(Guid id)

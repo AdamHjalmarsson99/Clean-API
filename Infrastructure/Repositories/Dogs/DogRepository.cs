@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Infrastructure.MySQLDb;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Drawing2D;
 
 namespace Infrastructure.Repositories.Dogs
 {
@@ -13,14 +14,21 @@ namespace Infrastructure.Repositories.Dogs
             _realDatabase = realDatabase;
         }
 
-        //GLÖM INTE ATT ÄNDRA I ALLA QUERIES
-        public async Task<List<Dog>> GetAll()
+        public async Task<List<Dog>> GetAll(string? breed, int? weight)
         {
-            var dogsWithUsers = await _realDatabase.Dogs
-                .Include(dog => dog.Users)
-                .ToListAsync();
+            var query = _realDatabase.Dogs.AsQueryable();
 
-            return dogsWithUsers;
+            if (!string.IsNullOrEmpty(breed))
+            {
+                query = query.Where(dog => dog.Breed == breed);
+            }
+
+            if (weight.HasValue)
+            {
+                query = query.Where(dog => dog.Weight == weight.Value);
+            }
+
+            return await query.ToListAsync();
         }
 
         public async Task<Dog?> GetById(Guid id)

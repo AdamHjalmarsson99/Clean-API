@@ -14,8 +14,8 @@ namespace Application.Queries.Birds.GetAll
         }
         public async Task<List<Bird>> Handle(GetAllBirdsQuery request, CancellationToken cancellationToken)
         {
-            var allBirdsFromRealDatabase = await _birdRepository.GetAll();
-            return allBirdsFromRealDatabase;
+            var birdsFromList = await _birdRepository.GetAll(request.Color);
+            return birdsFromList;
         }
     }
 }

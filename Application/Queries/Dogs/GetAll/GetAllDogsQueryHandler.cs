@@ -15,7 +15,7 @@ namespace Application.Queries.Dogs
         }
         public async Task<List<Dog>> Handle(GetAllDogsQuery request, CancellationToken cancellationToken)
         {
-            var allDogsFromRealDatabase = await _dogRepository.GetAll();
+            var allDogsFromRealDatabase = await _dogRepository.GetAll(request.Breed, request.Weight);
             return allDogsFromRealDatabase;
         }
     }

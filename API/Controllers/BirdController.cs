@@ -25,9 +25,9 @@ namespace API.Controllers
         // GET: BirdController
         [HttpGet]
         [Route("getAllBirds")]
-        public async Task<IActionResult> GetAllBirds()
+        public async Task<IActionResult> GetAllBirds([FromQuery] string? color)
         {
-            return Ok(await _mediator.Send(new GetAllBirdsQuery()));
+            return Ok(await _mediator.Send(new GetAllBirdsQuery { Color = color }));
         }
 
 

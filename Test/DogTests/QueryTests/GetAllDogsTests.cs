@@ -1,5 +1,4 @@
-﻿using Application.Queries.Birds.GetAll;
-using Application.Queries.Dogs;
+﻿using Application.Queries.Dogs;
 using Application.Queries.Dogs.GetAll;
 using Domain.Models;
 using Infrastructure.Repositories.Dogs;
@@ -24,37 +23,47 @@ namespace Test.DogTests.QueryTests
         public async Task Handle_ValidDogList_ReturnsAllDogs()
         {
             // Arrange
+            var specifiedBreed = "Golden Retriever";
+            var specifiedWeight = 25;
+
+            var query = new GetAllDogsQuery { Breed = specifiedBreed, Weight = specifiedWeight };
             var expectedDogs = new List<Dog>
             {
-                new Dog { Id = Guid.NewGuid(), Name = "Dog1"},
-                new Dog { Id = Guid.NewGuid(), Name = "Dog2" }
+                new Dog { Id = Guid.NewGuid(), Breed = specifiedBreed, Weight = specifiedWeight, Name = "Dog1" },
+                new Dog { Id = Guid.NewGuid(), Breed = specifiedBreed, Weight = specifiedWeight, Name = "Dog2" }
             };
 
-            _mockDogRepository.Setup(repo => repo.GetAll()).ReturnsAsync(expectedDogs);
+            _mockDogRepository.Setup(x => x.GetAll(specifiedBreed, specifiedWeight)).ReturnsAsync(expectedDogs);
 
             // Act
-            var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
+            var result = await _handler.Handle(query, default);
 
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.EqualTo(expectedDogs));
-            _mockDogRepository.Verify(repo => repo.GetAll(), Times.Once);
+            _mockDogRepository.Verify(x => x.GetAll(specifiedBreed, specifiedWeight), Times.Once);
         }
 
         [Test]
         public async Task Handle_InvalidDogList_ReturnsEmptyList()
         {
+
             // Arrange
-            _mockDogRepository.Setup(repo => repo.GetAll()).ReturnsAsync(new List<Dog>());
+            var specifiedBreed = "Rottweiler";
+            var specifiedWeight = 50;
+            var query = new GetAllDogsQuery { Breed = specifiedBreed, Weight = specifiedWeight };
+            var expectedDogs = new List<Dog>();
+
+            _mockDogRepository.Setup(x => x.GetAll(specifiedBreed, specifiedWeight)).ReturnsAsync(expectedDogs);
 
             // Act
-            var result = await _handler.Handle(new GetAllDogsQuery(), CancellationToken.None);
+            var result = await _handler.Handle(query, default);
 
             // Assert
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.Empty);
-
-            _mockDogRepository.Verify(repo => repo.GetAll(), Times.Once);
+            Assert.That(result, Is.EqualTo(expectedDogs));
+            _mockDogRepository.Verify(x => x.GetAll(specifiedBreed, specifiedWeight), Times.Once);
         }
     }
 }

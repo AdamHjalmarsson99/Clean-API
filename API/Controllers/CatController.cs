@@ -23,10 +23,11 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllCats")]
-        public async Task<IActionResult> GetAllCats()
+        public async Task<IActionResult> GetAllCats([FromQuery] string? breed, [FromQuery] int? weight)
         {
-            return Ok(await _mediator.Send(new GetAllCatsQuery()));
+            return Ok(await _mediator.Send(new GetAllCatsQuery { Breed = breed, Weight = weight }));
         }
+
 
         // Get a specific cat by Id
         [HttpGet]

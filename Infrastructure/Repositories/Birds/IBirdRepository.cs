@@ -5,7 +5,7 @@ namespace Infrastructure.Repositories.Birds
     public interface IBirdRepository
     {
         Task<Bird?> GetById(Guid id);
-        Task<List<Bird>> GetAll();
+        Task<List<Bird>> GetAll(string? color);
         Task<Bird> Add(Bird bird);
         Task<Bird> Update(Bird bird);
         Task<Bird> Delete(Bird bird);

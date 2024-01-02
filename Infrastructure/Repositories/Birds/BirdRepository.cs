@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Infrastructure.MySQLDb;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing;
 
 namespace Infrastructure.Repositories.Birds
 {
@@ -12,14 +13,27 @@ namespace Infrastructure.Repositories.Birds
         {
             _realDatabase = realDatabase;
         }
-        //GLÖM INTE ATT ÄNDRA I ALLA QUERIES
-        public async Task<List<Bird>> GetAll()
-        {
-            var birdsWithUsers = await _realDatabase.Birds
-                  .Include(bird => bird.Users)
-                  .ToListAsync();
 
-            return birdsWithUsers;
+        public async Task<List<Bird>> GetAll(string? Color)
+        {
+            try
+            {
+                var query = _realDatabase.Birds.Include(bird => bird.Users).AsQueryable();
+
+                if (!string.IsNullOrEmpty(Color))
+                {
+                    query = query.Where(bird => bird.Color == Color);
+                }
+
+                var birdsWithUsers = await query.ToListAsync();
+
+                return birdsWithUsers;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in BirdRepository.GetAll: {ex.Message}");
+                throw;
+            }
         }
 
         public async Task<Bird?> GetById(Guid id)

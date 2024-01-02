@@ -14,7 +14,7 @@ namespace Application.Queries.Cats.GetAll
         }
         public async Task<List<Cat>> Handle(GetAllCatsQuery request, CancellationToken cancellationToken)
         {
-            var allCatsFromRealDatabase = await _catRepository.GetAll();
+            var allCatsFromRealDatabase = await _catRepository.GetAll(request.Breed, request.Weight);
             return allCatsFromRealDatabase;
         }
     }
